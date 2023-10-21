@@ -196,7 +196,7 @@ int main() {
     clear_screen();
 	puts("Your matrix:");
 	display(matrix, dim);
-	printf("Determinant equals %.2f", laplace(matrix, dim));
+	printf("Determinant equals %.2f\n", laplace(matrix, dim));
 	cleanup(matrix);
 	return 0;
 }

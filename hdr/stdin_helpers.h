@@ -1,3 +1,5 @@
+#include <stddef.h>
+
 // safely read integer from stdin
 int get_int_from_stdin(void);
 
