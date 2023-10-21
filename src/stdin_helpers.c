@@ -1,6 +1,7 @@
 #include "stdin_helpers.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #define INPUT_BUFFERSIZE (20)
 

@@ -24,7 +24,7 @@ double sum_d(double* arr, size_t size) {
 void clear_screen(void) {
 	system("clear");
 }
-
+ 
 void cleanup(double** matrix) {
 	free(matrix[0]);
 	free(matrix);
