@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #include "stdin_helpers.h"
 
@@ -13,29 +14,21 @@ double** construct_matrix(size_t x, size_t y) {
 	return matrix;
 }
 
-double sum_d(double* arr, size_t size) {
-	double sum = 0;
-	for (size_t i = 0; i < size; ++i) {
-		sum += arr[i];
-	}
-	return sum;
-}
-
-void clear_screen(void) {
-	system("clear");
-}
- 
 void cleanup(double** matrix) {
 	free(matrix[0]);
 	free(matrix);
 }
 
-unsigned menu(void) {
+void clear_screen(void) {
+	system("clear");
+}
+
+size_t menu(void) {
 	clear_screen();
 
-	puts("Welcome to matrix determinant calculator");
-	puts("1. Calculate detetminant");
-	puts("2. Exit");
+	printf("Welcome to matrix determinant calculator\n");
+	printf("1. Calculate detetminant\n");
+	printf("2. Exit\n");
 
 	unsigned choice = get_uint_from_stdin();
 	
@@ -43,16 +36,16 @@ unsigned menu(void) {
 
 	switch(choice) {
 		case 1:
-			puts("Disclaimer: max dimentions are currently 4x4");
-			puts("Provide matrix dimention: ");
-			unsigned dim = get_int_from_stdin();
+			printf("Disclaimer: only real matrices are acceptable\n");
+			printf("Provide matrix dimention: \n");
+			size_t dim = get_sizet_from_stdin();
 			if(dim == 1) {
-				printf("That's pretty pointless, don't You think?");
+				printf("That's pretty pointless, don't You think?\n");
 				exit(0);
 			}
 			return dim;
 		case 2:
-			puts("Cya!");
+			printf("Cya!\n");
 			exit(0);
 			break;
 		default:
@@ -69,7 +62,7 @@ void display(double** table, size_t size)
 	}
 	printf("\n");
 	
-	// macierz
+	// matrix
 	for(size_t i = 0; i < size; ++i) {
         for(size_t j = 0; j < size; ++j) {
             printf("%.2f\t", table[i][j]);
@@ -87,98 +80,50 @@ double det2(double** matrix) {
 	return matrix[0][0]*matrix[1][1] - matrix[0][1]*matrix[1][0];
 }
 
-double det3(double** matrix)
-{
-	double temp[6];
-	temp[0] = matrix[0][0]*matrix[1][1]*matrix[2][2];
-	temp[1] = matrix[0][1]*matrix[1][2]*matrix[2][0];
-	temp[2] = matrix[0][2]*matrix[1][0]*matrix[2][1];
-	temp[3] = matrix[0][2]*matrix[1][1]*matrix[2][0];
-	temp[4] = matrix[0][1]*matrix[1][0]*matrix[2][2];
-	temp[5] = matrix[0][0]*matrix[1][2]*matrix[2][1];
-	return sum_d(temp, 3)-sum_d(temp+3, 3);
-}
+double laplace2(double** matrix, size_t dim) {
+	if (dim == 1) return matrix[0][0];
+	if (dim == 2) return det2(matrix);
 
-double laplace(double** matrix, int dim)
-{
-    if(dim == 2)
-        return det2(matrix);
-    if(dim == 3)
-        return det3(matrix);
-    if(dim == 4)
-    {
-		// rozwinięcie względem kolumny 0
-		double** matrix1 = construct_matrix(3, 3);
-		double** matrix2 = construct_matrix(3, 3);
-		double** matrix3 = construct_matrix(3, 3);
-		double** matrix4 = construct_matrix(3, 3);
+	// Laplace expansion column, algorithm always expands over k=0
+	size_t laplace_k = 0;
 
-		matrix1[0][0] = matrix[1][1];
-		matrix1[0][1] = matrix[1][2];
-		matrix1[0][2] = matrix[1][3];
-		matrix1[1][0] = matrix[2][1];
-		matrix1[1][1] = matrix[2][2];
-		matrix1[1][2] = matrix[2][3];
-		matrix1[2][0] = matrix[3][1];
-		matrix1[2][1] = matrix[3][2];
-		matrix1[2][2] = matrix[3][3];
+	// create array of matrices[dim-1][dim-1]
+	double*** matrices = malloc(dim*sizeof(double***));
 
-		matrix2[0][0] = matrix[0][1];
-		matrix2[0][1] = matrix[0][2];
-		matrix2[0][2] = matrix[0][3];
-		matrix2[1][0] = matrix[2][1];
-		matrix2[1][1] = matrix[2][2];
-		matrix2[1][2] = matrix[2][3];
-		matrix2[2][0] = matrix[3][1];
-		matrix2[2][1] = matrix[3][2];
-		matrix2[2][2] = matrix[3][3];
-
-		matrix3[0][0] = matrix[0][1];
-		matrix3[0][1] = matrix[0][2];
-		matrix3[0][2] = matrix[0][3];
-		matrix3[1][0] = matrix[1][1];
-		matrix3[1][1] = matrix[1][2];
-		matrix3[1][2] = matrix[1][3];
-		matrix3[2][0] = matrix[3][1];
-		matrix3[2][1] = matrix[3][2];
-		matrix3[2][2] = matrix[3][3];
-
-		matrix4[0][0] = matrix[0][1];
-		matrix4[0][1] = matrix[0][2];
-		matrix4[0][2] = matrix[0][3];
-		matrix4[1][0] = matrix[1][1];
-		matrix4[1][1] = matrix[1][2];
-		matrix4[1][2] = matrix[1][3];
-		matrix4[2][0] = matrix[2][1];
-		matrix4[2][1] = matrix[2][2];
-		matrix4[2][2] = matrix[2][3];
-        // double matrix1[3][3] = {{ matrix[1][1], matrix[1][2], matrix[1][3] },
-        //                  		{ matrix[2][1], matrix[2][2], matrix[2][3] },
-        //                  		{ matrix[3][1], matrix[3][2], matrix[3][3]}};
-        // double matrix2[3][3] = {{ matrix[0][1], matrix[0][2], matrix[0][3] },
-        //                  		{ matrix[2][1], matrix[2][2], matrix[2][3] },
-        //                  		{ matrix[3][1], matrix[3][2], matrix[3][3]}};
-        // double matrix3[3][3] = {{ matrix[0][1], matrix[0][2], matrix[0][3] },
-		// 						{ matrix[1][1], matrix[1][2], matrix[1][3] },
-        //                  		{ matrix[3][1], matrix[3][2], matrix[3][3]}};
-        // double matrix4[3][3] = {{ matrix[0][1], matrix[0][2], matrix[0][3] },
-		// 						{ matrix[1][1], matrix[1][2], matrix[1][3] },
-		// 						{ matrix[2][1], matrix[2][2], matrix[2][3] }};
-        return 	  matrix[0][0] * laplace(matrix1, 3) 
-				- matrix[0][1] * laplace(matrix2, 3) 
-				+ matrix[0][2] * laplace(matrix3, 3) 
-				- matrix[0][3] * laplace(matrix4, 3);
-    }
-	else {
-		puts("Invalid dimensions provided, exiting");
-		exit(0);
-		return 0;
+	// loop over laplace submatrices
+	for (size_t i = 0; i < dim; ++i) {
+		matrices[i] = construct_matrix(dim-1, dim-1);
+		// laplace_j = i;
+		// loop over input matrix
+		for (size_t j = 0; j < dim; ++j) {
+			if (j == i) continue;
+			for (size_t k = 0; k < dim; ++k) {
+				if (k == laplace_k) continue;
+				size_t j_output =  j>i ? j-1 : j;	// increment row if above expanded row, else do nothing
+				size_t k_output = k-1;				// always increment column since we expand over k=0
+				matrices[i][j_output][k_output] = matrix[j][k];
+			}
+		}
 	}
+
+	// calculate determinant by looping over matrices and applying algorithm recursively
+	double result = 0;
+	for (size_t i = 0; i < dim; ++i) {
+		result += pow(-1, i)*matrix[i][0]*laplace2(matrices[i], dim-1);
+	}
+
+	// free matrices
+	for (size_t i = 0; i < dim; ++i) {
+		cleanup(matrices[i]);
+	}
+	free(matrices);
+
+	return result;
 }
 
 int main() {
 
-	unsigned dim = menu();
+	size_t dim = menu();
 
 	// dynamic allocation as a coherent block
 	double** matrix = construct_matrix(dim, dim);
@@ -187,16 +132,16 @@ int main() {
     for(size_t i = 0; i < dim; ++i) {
 		for(size_t j = 0; j < dim; ++j) {
 			clear_screen();
-        	puts("Provide matrix cell values, left to right, from up to down");
-        	printf("Provide matrix cell value no. %lld\n", i*dim+j+1);
+        	printf("Provide matrix cell values, left to right, from up to down\n");
+        	printf("Provide matrix cell value no. %zu\n", i*dim+j+1);
 			display(matrix, dim);
 			matrix[i][j] = get_double_from_stdin();
 		}  
     }
     clear_screen();
-	puts("Your matrix:");
+	printf("Your matrix: \n");
 	display(matrix, dim);
-	printf("Determinant equals %.2f\n", laplace(matrix, dim));
+	printf("Determinant equals %.2f\n", laplace2(matrix, dim));
 	cleanup(matrix);
 	return 0;
 }

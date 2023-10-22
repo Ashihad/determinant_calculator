@@ -26,7 +26,7 @@ size_t get_sizet_from_stdin(void) {
 	char input_buffer[INPUT_BUFFERSIZE] = {0};
 	fgets(input_buffer, INPUT_BUFFERSIZE, stdin);
 	size_t output;
-	int success = sscanf(input_buffer, "%zu", &output);
+	sscanf(input_buffer, "%zu", &output);
     return output;
 }
 
