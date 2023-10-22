@@ -4,20 +4,7 @@
 #include <math.h>
 
 #include "stdin_helpers.h"
-
-double** construct_matrix(size_t x, size_t y) {
-	double** matrix = malloc(x*sizeof(double*));
-	matrix[0] = malloc(x*y*sizeof(double));
-	memset(matrix[0], 0, x*y*sizeof(double));
-	for(size_t i = 1; i < x; ++i)
-		matrix[i] = matrix[0] + i*y;
-	return matrix;
-}
-
-void cleanup(double** matrix) {
-	free(matrix[0]);
-	free(matrix);
-}
+#include "matrix.h"
 
 void clear_screen(void) {
 	system("clear");
@@ -92,7 +79,7 @@ double laplace2(double** matrix, size_t dim) {
 
 	// loop over laplace submatrices
 	for (size_t i = 0; i < dim; ++i) {
-		matrices[i] = construct_matrix(dim-1, dim-1);
+		matrices[i] = construct_matrix_d(dim-1, dim-1);
 		// laplace_j = i;
 		// loop over input matrix
 		for (size_t j = 0; j < dim; ++j) {
@@ -114,7 +101,7 @@ double laplace2(double** matrix, size_t dim) {
 
 	// free matrices
 	for (size_t i = 0; i < dim; ++i) {
-		cleanup(matrices[i]);
+		destroy_matrix_d(matrices[i]);
 	}
 	free(matrices);
 
@@ -126,7 +113,7 @@ int main() {
 	size_t dim = menu();
 
 	// dynamic allocation as a coherent block
-	double** matrix = construct_matrix(dim, dim);
+	double** matrix = construct_matrix_d(dim, dim);
 
     //input
     for(size_t i = 0; i < dim; ++i) {
@@ -142,7 +129,7 @@ int main() {
 	printf("Your matrix: \n");
 	display(matrix, dim);
 	printf("Determinant equals %.2f\n", laplace2(matrix, dim));
-	cleanup(matrix);
+	destroy_matrix_d(matrix);
 	return 0;
 }
 
