@@ -6,10 +6,12 @@ VPATH = $(hdrdir):$(objdir):$(srcdir)
 
 objfiles = $(objdir)/main.o $(objdir)/stdin_helpers.o 
 
+linkedlibs = -lm
+
 flags = -Wall -Wextra -std=c11 -O2
 
 main: main.o stdin_helpers.o
-	gcc $(objfiles) -lm -o main
+	gcc $(objfiles) $(linkedlibs) -o main
 
 main.o: main.c stdin_helpers.h
 	gcc -c $(srcdir)/main.c -I./$(hdrdir) $(flags) -o $(objdir)/main.o
