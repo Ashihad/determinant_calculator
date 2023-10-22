@@ -63,13 +63,8 @@ void display(double** table, size_t size)
 	printf("\n");
 }
 
-double det2(double** matrix) {
-	return matrix[0][0]*matrix[1][1] - matrix[0][1]*matrix[1][0];
-}
-
 double laplace2(double** matrix, size_t dim) {
 	if (dim == 1) return matrix[0][0];
-	if (dim == 2) return det2(matrix);
 
 	// Laplace expansion column, algorithm always expands over k=0
 	size_t laplace_k = 0;
