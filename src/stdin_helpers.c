@@ -35,5 +35,7 @@ double get_double_from_stdin(void) {
 	char input_buffer[INPUT_BUFFERSIZE] = {0};
 	fgets(input_buffer, INPUT_BUFFERSIZE, stdin);
 	double output = strtod(input_buffer, NULL);
+	// printf("from %s\n", __func__);
+	// printf("\tgot %f\n", output);
 	return output;
 }
